@@ -1,0 +1,30 @@
+Subscribers who logged in using App = 
+VAR MaxDate =
+    MAX ( 'Date (Volume)'[SK_Date] )
+
+VAR ActiveSubscribers =
+    CALCULATETABLE (
+        VALUES ( 'Fact Subscriber'[SK_SimCard] ),
+        'Fact Subscriber'[SK_Date_Activation] <= MaxDate,
+        'Fact Subscriber'[SK_Date_Activation] > 0,
+        OR (
+            'Fact Subscriber'[SK_Date_Deactivation] > MaxDate,
+            'Fact Subscriber'[SK_Date_Deactivation] = -1
+        ),
+        'Fact Subscriber'[SK_Date_SignupCancellation] = -1,
+        'Fact Subscriber'[SK_Date_Start] <= MaxDate,
+        'Fact Subscriber'[SK_Date_End] > MaxDate
+    )
+
+VAR LoggedInSimcards =
+    CALCULATETABLE (
+        VALUES ( 'Fact Event'[SK_SimCard] ),
+        'Event type'[Event type]="Login"
+        ,'Event type'[Event level 2]="App"
+        
+    )
+
+RETURN
+    COUNTROWS (
+        INTERSECT ( ActiveSubscribers, LoggedInSimcards )
+    )
