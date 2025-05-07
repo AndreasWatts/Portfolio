@@ -14,6 +14,8 @@ This space includes sample SQL queries that have been adjusted and anonymized fr
 
 -DateDiff
 
+-Common Table Expressions (CTE)
+
 -Creating new columns
 
 -JOIN Types
