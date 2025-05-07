@@ -1,0 +1,31 @@
+Incoming Sales Answered Total =
+
+VAR MaxDate =
+    MAX ( 'Date (Volume)'[SK_Date] )
+VAR MaxReportDate =
+    MAX ( 'Date (Volume)'[Date (Volume)] )
+VAR FilterDate =
+    IF ( MaxReportDate > TODAY (), TODAY (), MaxReportDate )
+VAR FilterDateMinus90 = FilterDate - 90
+VAR FilterDateInt =
+    YEAR ( FilterDateMinus90 ) * 10000
+        + MONTH ( FilterDateMinus90 ) * 100
+        + DAY ( FilterDateMinus90 )
+VAR IncomingSales =
+    CALCULATETABLE (
+        SUMMARIZE ( 'Fact Subscriber', 'Fact Subscriber'[SK_SimCard] ),
+        'Fact Subscriber'[SK_Date_Signup] > FilterDateInt,
+        OR (
+            'Fact Subscriber'[SK_Date_Activation] > MaxDate,
+            'Fact Subscriber'[SK_Date_Activation] = -1
+        ),
+        'Fact Subscriber'[SK_Date_SignupCancellation] = -1,
+        'Fact Subscriber'[SK_Date_Start] <= MaxDate,
+        'Fact Subscriber'[SK_Date_End] > MaxDate,
+        'Fact Subscriber'[SK_SimCard] <> - 1
+    )
+RETURN
+    CALCULATE (
+        SUM ( 'Fact Contact'[ConversationsAnswered] ),
+        'Fact Contact'[SK_SimCard] IN IncomingSales
+    )
