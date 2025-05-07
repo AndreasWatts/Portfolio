@@ -13,8 +13,6 @@ In this portfolio, you'll discover a collection of projects, including:
 2.  Data Engineering: Data architecture, data warehousing, data modelling, SQL, Python, ETL/ELT, DBT and everything in between.
     
 3.  Data Science and Machine Learning: I enjoy digging into data and creating predictive models. My data science projects often involve Python, data analysis, and machine learning.
-    
-6.  Teaching and Learning: Sharing knowledge is important to me. I've hope that this portafolio helps fellow developers on their Python, Unity, and C# journey.
 
 ## Tech Stack
 
