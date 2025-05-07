@@ -1,0 +1,30 @@
+FTR30 (First Time Right) =
+
+--find heavy callers:
+VAR HeavyCustomers =
+    CALCULATETABLE (
+        VALUES ( 'Fact Contact'[SK_Caller] ),
+        FILTER (
+            GROUPBY (
+                'Fact Contact',
+                'Fact Contact'[SK_Caller],
+                "Count", SUMX ( CURRENTGROUP (), 1 )
+            ),
+            [Count] > 30
+        )
+    )
+RETURN
+    DIVIDE (
+        CALCULATE (
+            SUM ( 'Fact Contact'[FTR4_Analogue] ),
+            'Fact Contact'[ConversationsAnswered] > 0,
+            'Fact Contact'[SK_Caller] <> -1,
+            NOT ( 'Fact Contact'[SK_Caller] IN HeavyCustomers )
+        ),
+        CALCULATE (
+            COUNTROWS ( 'Fact Contact' ),
+            'Fact Contact'[ConversationsAnswered] > 0,
+            'Fact Contact'[SK_Caller] <> -1,
+            NOT ( 'Fact Contact'[SK_Caller] IN HeavyCustomers ) --subtract heavy callers
+        )
+    )
