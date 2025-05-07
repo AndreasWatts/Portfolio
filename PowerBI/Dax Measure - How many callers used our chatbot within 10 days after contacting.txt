@@ -1,0 +1,36 @@
+Customer Chats Within 10 Days after calling = 
+
+SUMX(
+    VALUES('Date (Volume)'[SK_Date]),
+VAR CallDateKey = 'Date (Volume)'[SK_Date]
+VAR CallDate =
+        CALCULATE(
+            MAX('Date (Volume)'[Date (Volume)]),
+            'Date (Volume)'[SK_Date] = CallDateKey
+        )
+
+VAR CustomersWhocalledOnDate =
+    CALCULATETABLE(
+        VALUES('Fact Contact'[SK_Customer]),
+        'Fact Contact'[SK_Date_Contact] = CallDateKey  -- Use CallDateKey
+        )
+
+VAR ValidChatDates =
+    CALCULATETABLE(
+        VALUES('Date (Volume)'[SK_Date]),
+        FILTER(
+            ALL('Date (Volume)'),
+            'Date (Volume)'[Date (Volume)] >= CallDate &&
+            'Date (Volume)'[Date (Volume)] <= CallDate + 10
+        )
+    )
+
+VAR ChatsInNext10Days =
+    CALCULATETABLE(
+        VALUES('Fact Chat'[SK_Customer]),
+        'Fact Chat'[SK_Date_ChatStart] IN ValidChatDates,
+        TREATAS(CustomersWhocalledOnDate, 'Fact Chat'[SK_Customer])
+    )
+RETURN
+    COUNTROWS(ChatsInNext10Days)
+)
