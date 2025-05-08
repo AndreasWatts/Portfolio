@@ -6,9 +6,6 @@ For this project I built a dimensional model on car sales data using PySpark and
 ## Project Architecture
 Data is extracted from an Azure cloud SQL server using Azure Data Factory to Azure Data Lake Gen2 and saved as Parquet files. The data is then transformed within Databricks and then modelled into a star schema consisting of a fact table and multiple dimensions.
 ![](https://media.contra.com/image/upload/fl_progressive/q_auto:best/ktc4wkdffxugepq5zprl.webp)
-The final result is the following star schema:
-
-![](https://media.contra.com/image/upload/fl_progressive/q_auto:best/kenve49pln8vb8nkpjnm.webp)
 
 ## ETL
 Extracting the data from the SQL server to the Data Lake was done with Azure Data Factory.
