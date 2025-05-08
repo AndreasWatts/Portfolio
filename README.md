@@ -10,9 +10,11 @@ In this portfolio, you'll discover a collection of projects, including:
 
 1.  Data Analytics: I have extensive experience performing data analysis. Tools i use include: Excel, Power BI, Databricks, Fabric, SQL, Python & Jupyter Notebooks.
     
-2.  Data Engineering: Data architecture, data warehousing, data modelling, SQL, Python, ETL/ELT, DBT and everything in between.
+2.  Data Engineering: Data warehousing, data modelling, SQL, Python, Spark, Databricks, ETL/ELT, DBT and everything in between.
     
 3.  Data Science and Machine Learning: I enjoy digging into data and creating predictive models. My data science projects often involve Python, data analysis, and machine learning.
+
+4.  Business Intelligence: Data-architecture, frameworks, data visualisation, DAX, semantic layer and more.
 
 ## Tech Stack
 
