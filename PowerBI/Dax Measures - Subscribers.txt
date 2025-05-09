@@ -1,0 +1,94 @@
+Subscribers active =
+VAR MaxDate =
+    MAX ( 'Date (Volume)'[SK_Date] )
+RETURN
+    CALCULATE (
+        DISTINCTCOUNT ( 'Fact Subscriber'[SK_SimCard] ),
+        AND (
+            'Fact Subscriber'[SK_Date_Activation] <= MaxDate,
+            'Fact Subscriber'[SK_Date_Activation] > 0
+        ),
+        OR (
+            'Fact Subscriber'[SK_Date_Deactivation] > MaxDate,
+            'Fact Subscriber'[SK_Date_Deactivation] = -1
+        ),
+        'Fact Subscriber'[SK_Date_SignupCancellation] = -1,
+        'Fact Subscriber'[SK_Date_Start] <= MaxDate,
+        'Fact Subscriber'[SK_Date_End] > MaxDate
+    )
+
+--------------------
+Subscribers all (Incl. closed) =
+VAR MaxDate =
+    MAX ( 'Date (Volume)'[SK_Date] )
+RETURN
+    CALCULATE (
+        DISTINCTCOUNT ( 'Fact Subscriber'[SK_SimCard] ),
+        'Fact Subscriber'[SK_Date_Start] <= MaxDate,
+        'Fact Subscriber'[SK_Date_End] > MaxDate
+    )
+
+---------------------
+Signup total =
+VAR MaxDate = MAX( 'Date (Volume)'[SK_Date] )
+RETURN
+    CALCULATE(
+        DISTINCTCOUNT( 'Fact Subscriber'[SK_SimCard] ),
+        'Fact Subscriber'[SK_Date_Start] <= MaxDate,
+        'Fact Subscriber'[SK_Date_End] > MaxDate,
+        'Fact Subscriber'[TransferActivation] = 0,
+        'Fact Subscriber'[SK_Date_SignUp] >= 20200101
+    )
+
+-----------------------
+Effectuated Churn total =
+VAR MinDate =
+    MIN ( 'Date (Volume)'[SK_Date] )
+VAR MaxDate =
+    MAX ( 'Date (Volume)'[SK_Date] )
+RETURN
+    CALCULATE (
+        COUNTROWS (
+            SUMMARIZE (
+                FILTER (
+                    'Fact Subscriber',
+                    'Fact Subscriber'[SK_Date_Deactivation] >= MinDate
+                        && 'Fact Subscriber'[SK_Date_Deactivation] <= MaxDate
+                        && 'Fact Subscriber'[SK_Date_Start] <= MaxDate
+                        && 'Fact Subscriber'[SK_Date_End] > MaxDate
+                        && 'Fact Subscriber'[TransferDeactivation] = 0
+                        && 'Fact Subscriber'[SK_Date_Deactivation] >= 20200101
+                ),
+                'Fact Subscriber'[SK_SimCard],
+                'Fact Subscriber'[SK_Date_Deactivation]
+            )
+        )
+    )
+
+-----------------------
+Ordered Churn Total =
+VAR MinDate =
+    MIN ( 'Date (Ordered churn)'[SK_Date] )
+VAR MaxDate =
+    MAX ( 'Date (Ordered churn)'[SK_Date] )
+RETURN
+    CALCULATE (
+        COUNTROWS (
+            SUMMARIZE (
+                FILTER (
+                    'Fact Subscriber',
+                    'Fact Subscriber'[SK_Date_CancellationOrder] >= MinDate
+                        && 'Fact Subscriber'[SK_Date_CancellationOrder] <= MaxDate
+                        && 'Fact Subscriber'[SK_Date_CancellationOrder] >= 20200101 // Measures må ikke vise resultater fra før 2020      
+                        && 'Fact Subscriber'[SK_Date_SignupCancellation] = -1
+                        && ( 'Fact Subscriber'[IsRevoked] = 1
+                        || ( 'Fact Subscriber'[IsRevoked] = 0
+                        && 'Fact Subscriber'[TransferDeactivation] = 0 ) )
+                ),
+                'Fact Subscriber'[SK_SimCard],
+                'Fact Subscriber'[SK_Date_CancellationOrder],
+                'Fact Subscriber'[SK_Date_SelectedDeactivation],
+                'Fact Subscriber'[IsRevoked]
+            )
+        )
+    )
