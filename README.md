@@ -28,4 +28,4 @@ In this portfolio, you'll discover a collection of projects, including:
 
 I'm always open to collaboration. Reach out to me on  [Linkedin](https://www.linkedin.com/in/andreas-watts/?locale=en_US).
 
-Thank you for visiting my portfolio. I hope you find my work inspiring and look forward to connecting with you. Happy coding!
+Thank you for visiting my portfolio. I hope you find my work inspiring and look forward to connecting with you.
