@@ -1,36 +1,73 @@
-Customer Chats Within 10 Days after calling = 
-
+Customer Event 1-30 Days after calling = 
 SUMX(
-    VALUES('Date (Volume)'[SK_Date]),
-VAR CallDateKey = 'Date (Volume)'[SK_Date]
-VAR CallDate =
+    VALUES('Date'[SK_Date]),
+    VAR CallDateKey = 'Date'[SK_Date]
+    VAR CallDate =
         CALCULATE(
-            MAX('Date (Volume)'[Date (Volume)]),
-            'Date (Volume)'[SK_Date] = CallDateKey
+            MAX('Date'[Date]),
+            'Date'[SK_Date] = CallDateKey
         )
 
-VAR CustomersWhocalledOnDate =
-    CALCULATETABLE(
-        VALUES('Fact Contact'[SK_Customer]),
-        'Fact Contact'[SK_Date_Contact] = CallDateKey  -- Use CallDateKey
+    VAR CustomersWhoCalledOnDate =
+        CALCULATETABLE(
+            VALUES('Fact Contact'[SK_Customer]),
+            'Fact Contact'[SK_Date_Contact] = CallDateKey,
+            'Fact Contact'[ConversationsAnswered] = 1
         )
 
-VAR ValidChatDates =
-    CALCULATETABLE(
-        VALUES('Date (Volume)'[SK_Date]),
-        FILTER(
-            ALL('Date (Volume)'),
-            'Date (Volume)'[Date (Volume)] >= CallDate &&
-            'Date (Volume)'[Date (Volume)] <= CallDate + 10
-        )
-    )
+    VAR StartDate = TRUNC(CallDate)
+    VAR EndDate = StartDate + 30
 
-VAR ChatsInNext10Days =
-    CALCULATETABLE(
-        VALUES('Fact Chat'[SK_Customer]),
-        'Fact Chat'[SK_Date_ChatStart] IN ValidChatDates,
-        TREATAS(CustomersWhocalledOnDate, 'Fact Chat'[SK_Customer])
-    )
-RETURN
-    COUNTROWS(ChatsInNext10Days)
+    VAR EventCustomers =
+        CALCULATETABLE(
+            VALUES('Fact Event'[SK_Customer]),
+            FILTER(
+                ALL('Fact Event'),
+                'Fact Event'[SK_Customer] IN CustomersWhoCalledOnDate &&
+                TRUNC(RELATED('Date'[Date])) > StartDate &&
+                TRUNC(RELATED('Date'[Date])) <= EndDate
+            ),
+            TREATAS(VALUES('Fact Event'[SK_EventType]), 'Fact Event'[SK_EventType])
+        )
+
+    RETURN
+        COUNTROWS(EventCustomers)
+)
+
+---
+
+Customer Calls Again 1-30 Days after Calling = 
+SUMX(
+    VALUES('Date'[SK_Date]),
+    VAR CallDateKey = 'Date'[SK_Date]
+    VAR CallDate =
+        CALCULATE(
+            MAX('Date'[Date]),
+            'Date'[SK_Date] = CallDateKey
+        )
+
+    VAR CustomersWhoCalledOnDate =
+        CALCULATETABLE(
+            VALUES('Fact Contact'[SK_Customer]),
+            'Fact Contact'[SK_Date_Contact] = CallDateKey,
+            'Fact Contact'[ConversationsAnswered] = 1
+        )
+
+    VAR StartDate = TRUNC(CallDate)
+    VAR EndDate = StartDate + 30
+
+    VAR CallsInNext4Days =
+        CALCULATETABLE(
+            VALUES('Fact Contact'[SK_Customer]),
+            FILTER(
+                ALL('Fact Contact'),
+                'Fact Contact'[SK_Customer] IN CustomersWhoCalledOnDate &&
+                TRUNC(RELATED('Date'[Date])) > StartDate &&
+                TRUNC(RELATED('Date'[Date])) <= EndDate &&
+                'Fact Contact'[ConversationsAnswered] = 1
+            )
+        )
+
+    RETURN
+        COUNTROWS(CallsInNext4Days)
 )
