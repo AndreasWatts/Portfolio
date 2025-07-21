@@ -46,13 +46,13 @@ DROP TABLE IF EXISTS #ActiveSimcards
 SELECT DISTINCT SK_SimCard, SK_Bundle, SK_Customer, SK_StatusValue_Service
 INTO #ActiveSimcards
              FROM fct.Subscriber s
-             WHERE s.SK_Date_Activation <= 20250716
+             WHERE s.SK_Date_Activation <= CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
              AND   s.SK_Date_Activation > 0
-             AND   (   s.SK_Date_Deactivation > 20250716
+             AND   (   s.SK_Date_Deactivation > CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
                  OR    s.SK_Date_Deactivation = -1)
              AND   s.SK_Date_SignupCancellation = -1
-             AND   s.SK_Date_Start <= 20250716
-             AND   s.SK_Date_End > 20250716
+             AND   s.SK_Date_Start <= CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
+             AND   s.SK_Date_End > CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
 
 
 DROP TABLE IF EXISTS #CustomerInfo
