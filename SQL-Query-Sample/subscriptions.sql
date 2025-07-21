@@ -23,13 +23,13 @@ FROM (SELECT
 	StatusValue.Status
 FROM (SELECT DISTINCT SK_SimCard, SK_Bundle, SK_Customer, SK_StatusValue_Service
              FROM fct.vSubscriber s
-             WHERE s.SK_Date_Activation <= 20250716
+             WHERE s.SK_Date_Activation <= CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
              AND   s.SK_Date_Activation > 0
-             AND   (   s.SK_Date_Deactivation > 20250716
+             AND   (   s.SK_Date_Deactivation > CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
                  OR    s.SK_Date_Deactivation = -1)
              AND   s.SK_Date_SignupCancellation = -1
-             AND   s.SK_Date_Start <= 20250716
-             AND   s.SK_Date_End > 20250716) ActiveSimcards
+             AND   s.SK_Date_Start <= CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)
+             AND   s.SK_Date_End > CAST(CONVERT(VARCHAR(8), GETDATE(), 112) AS INT)) ActiveSimcards
 LEFT JOIN dim.vSimCard SIM ON ActiveSimcards.SK_SimCard = SIM.SK_SimCard
 LEFT JOIN dim.vBundle Bundle ON ActiveSimcards.SK_Bundle = Bundle.SK_Bundle
 LEFT JOIN dim.vCustomer Customer ON ActiveSimcards.SK_Customer = Customer.SK_Customer
